@@ -29,21 +29,47 @@ console.log("PARENT'S FOLDER PATH:", dirname(fileURLToPath(import.meta.url)));
 // // 3. Finally we can concatenate parent's folder path with "users.json" --> F:\Work\Epicode\2022\EN\BE-Master-04\U4\epicode-u4-d2-4\src\api\users\users.json
 console.log(
   "TARGET:",
-  join(dirname(fileURLToPath(import.meta.url)), "blog.json")
+  join(dirname(fileURLToPath(import.meta.url)), "authors.json")
 ); // WHEN YOU CONCATENATE TWO PATHS TOGETHER USE JOIN!!! (not the '+' symbol)
 
 const authorJSONPath = join(
   dirname(fileURLToPath(import.meta.url)),
-  "blog.json"
+  "authors.json"
 );
 console.log(
   "TARGET:",
-  join(dirname(fileURLToPath(import.meta.url)), "blog.json")
+  join(dirname(fileURLToPath(import.meta.url)), "authors.json")
 );
 
 // 1.
 authorsRouter.post("/", (req, res) => {
-  console.log({ message: "Post" });
+  // 1. Read the request body
+  console.log("REQUEST BODY:", req.body); // DO NOT FORGET TO ADD EXPRESS.JSON INTO SERVER.JS!!!!!!!!!!!!!!!!
+  // 2. Add some server generated info (unique id, createdAt, ...)
+  const { name, surname, email, DOB, avatar } = req.body;
+  const newAuthor = {
+    name,
+    surname,
+    DOB,
+    email,
+    avatar,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    id: uniqid(),
+  };
+  // 3. Save new user into users.json file
+
+  // 3.1 Read the content of the file, obtaining an array
+  const authorsArray = JSON.parse(fs.readFileSync(authorJSONPath));
+
+  // 3.2 Add the new user to the array
+  authorsArray.push(newAuthor);
+
+  // 3.3 Write the array back to the file
+  fs.writeFileSync(authorJSONPath, JSON.stringify(authorsArray)); // we cannot pass an array here, it needs to be converted into a string
+
+  // 4. Send back a proper response
+  res.status(201).send({ id: newAuthor.id });
 });
 
 // 2.
@@ -54,10 +80,10 @@ authorsRouter.get("/", (req, res) => {
 
   // 2. We shall convert the buffer into an array
   //console.log("FILE CONTENT AS ARRAY:", JSON.parse(fileContentAsBuffer))
-  const blogsArray = JSON.parse(fileContentAsBuffer);
+  const authorsArray = JSON.parse(fileContentAsBuffer);
 
   // 3. Send the array of users back as response
-  res.send(blogsArray);
+  res.send(authorsArray);
 });
 
 // 3.

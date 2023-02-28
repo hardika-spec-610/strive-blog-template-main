@@ -1,7 +1,7 @@
 // const express = require("express") OLD IMPORT SYNTAX
 import Express from "express"; // NEW IMPORT SYNTAX (We can use it only if we add "type": "module", to package.json)
 import listEndpoints from "express-list-endpoints";
-import authorsRouter from "./api/blogs/index.js";
+import authorsRouter from "./api/authors/index.js";
 
 const server = Express();
 const port = 3001;
