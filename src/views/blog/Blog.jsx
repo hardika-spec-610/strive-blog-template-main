@@ -24,6 +24,7 @@ const Blog = (props) => {
       const res = await fetch(`${apiUrl}/blogPosts/${id}`);
       if (res.ok) {
         const data = await res.json();
+        console.log("blogdata".data);
         setBlog(data);
         setLoading(false);
         console.log(blog);
@@ -102,13 +103,15 @@ const Blog = (props) => {
             </div>
           </div>
 
-          <div
+          {/* <div
             dangerouslySetInnerHTML={{
               __html: blog.content,
             }}
-          ></div>
+          ></div> */}
           {blog.comments &&
-            blog.comments.map((c) => <BlogComments key={c._id} {...c} />)}
+            blog.comments.map((c) => (
+              <BlogComments key={c.comment_id} {...c} />
+            ))}
           <NewBlogComments _id={params._id} />
         </Container>
       </div>

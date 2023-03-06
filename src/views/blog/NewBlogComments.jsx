@@ -3,7 +3,7 @@ import { Button, Container, Form } from "react-bootstrap";
 
 const NewBlogComments = (props) => {
   const [comment, setComment] = useState({
-    name: "",
+    authorName: "",
     text: "",
   });
 
@@ -18,6 +18,7 @@ const NewBlogComments = (props) => {
         }),
       });
       if (res.ok) {
+        console.log("newcomments", comment);
         setComment({
           authorName: "",
           text: "",
@@ -38,7 +39,7 @@ const NewBlogComments = (props) => {
     <Container>
       <Form onSubmit={handleSubmit}>
         <Form.Group>
-          <Form.Label>Name</Form.Label>
+          <Form.Label>Author Name</Form.Label>
           <Form.Control
             value={comment.authorName}
             onChange={(e) =>
