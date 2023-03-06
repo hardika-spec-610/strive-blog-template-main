@@ -1,25 +1,58 @@
 import React, { useEffect, useState } from "react";
-import { Container, Image } from "react-bootstrap";
-import { useNavigate, useParams } from "react-router-dom";
+import { Button, Container, Image } from "react-bootstrap";
+import { useParams } from "react-router-dom";
 import BlogAuthor from "../../components/blog/blog-author/BlogAuthor";
 import BlogLike from "../../components/likes/BlogLike";
-import posts from "../../data/posts.json";
+import { format, parseISO } from "date-fns";
+// import posts from "../../data/posts.json";
 import "./styles.css";
 const Blog = (props) => {
   const [blog, setBlog] = useState({});
   const [loading, setLoading] = useState(true);
   const params = useParams();
-  const navigate = useNavigate();
-  useEffect(() => {
-    const { id } = params;
-    const blog = posts.find((post) => post._id.toString() === id);
+  const [image, setImage] = useState(null);
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+  const apiUrl = process.env.REACT_APP_BE_URL;
 
-    if (blog) {
-      setBlog(blog);
-      setLoading(false);
-    } else {
-      navigate("/404");
+  const getBlogpost = async (id) => {
+    try {
+      const res = await fetch(`${apiUrl}/blogPosts/${id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setBlog(data);
+        setLoading(false);
+        console.log(blog);
+      }
+    } catch (error) {
+      console.log(error);
     }
+  };
+  const postImage = async (image) => {
+    const formData = new FormData();
+    formData.append("cover", image);
+    try {
+      let res = await fetch(`${apiUrl}/${params._id}/uploadCover`, {
+        method: "POST",
+        body: formData,
+      });
+      if (res.ok) {
+        console.log("Image Uploaded Successfully");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    postImage(image);
+  };
+  useEffect(() => {
+    const { _id } = params;
+    console.log("param", params);
+    getBlogpost(_id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {
@@ -29,6 +62,22 @@ const Blog = (props) => {
       <div className="blog-details-root">
         <Container>
           <Image className="blog-details-cover" src={blog.cover} fluid />
+          <form onSubmit={handleSubmit}>
+            <input
+              type="file"
+              onChange={(e) => {
+                setImage(e.target.files[0]);
+              }}
+            />
+            <Button
+              className="mt-2"
+              variant="primary"
+              onClick={handleClose}
+              type="submit"
+            >
+              Post Image
+            </Button>
+          </form>
           <h1 className="blog-details-title">{blog.title}</h1>
 
           <div className="blog-details-container">
@@ -36,7 +85,7 @@ const Blog = (props) => {
               <BlogAuthor {...blog.author} />
             </div>
             <div className="blog-details-info">
-              <div>{blog.createdAt}</div>
+              <div>{format(parseISO(blog.createdAt), "dd MMM yyyy")}</div>
               <div>{`${blog.readTime.value} ${blog.readTime.unit} read`}</div>
               <div
                 style={{
