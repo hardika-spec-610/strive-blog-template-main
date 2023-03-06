@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, Image } from "react-bootstrap";
+import { Button, Container, Form, Image } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import BlogAuthor from "../../components/blog/blog-author/BlogAuthor";
 import BlogLike from "../../components/likes/BlogLike";
 import { format, parseISO } from "date-fns";
 // import posts from "../../data/posts.json";
 import "./styles.css";
+import BlogComments from "./BlogComments";
+import NewBlogComments from "./NewBlogComments";
+
 const Blog = (props) => {
   const [blog, setBlog] = useState({});
   const [loading, setLoading] = useState(true);
@@ -14,10 +17,10 @@ const Blog = (props) => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const apiUrl = process.env.REACT_APP_BE_URL;
 
   const getBlogpost = async (id) => {
     try {
+      const apiUrl = process.env.REACT_APP_BE_URL;
       const res = await fetch(`${apiUrl}/blogPosts/${id}`);
       if (res.ok) {
         const data = await res.json();
@@ -33,6 +36,7 @@ const Blog = (props) => {
     const formData = new FormData();
     formData.append("cover", image);
     try {
+      const apiUrl = process.env.REACT_APP_BE_URL;
       let res = await fetch(`${apiUrl}/${params._id}/uploadCover`, {
         method: "POST",
         body: formData,
@@ -74,6 +78,7 @@ const Blog = (props) => {
               variant="primary"
               onClick={handleClose}
               type="submit"
+              width="500px"
             >
               Post Image
             </Button>
@@ -102,6 +107,9 @@ const Blog = (props) => {
               __html: blog.content,
             }}
           ></div>
+          {blog.comments &&
+            blog.comments.map((c) => <BlogComments key={c._id} {...c} />)}
+          <NewBlogComments _id={params._id} />
         </Container>
       </div>
     );
