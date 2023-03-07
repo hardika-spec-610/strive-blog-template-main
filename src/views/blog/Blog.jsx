@@ -24,7 +24,7 @@ const Blog = (props) => {
       const res = await fetch(`${apiUrl}/blogPosts/${id}`);
       if (res.ok) {
         const data = await res.json();
-        console.log("blogdata".data);
+        // console.log("blogdata".data);
         setBlog(data);
         setLoading(false);
         console.log(blog);
