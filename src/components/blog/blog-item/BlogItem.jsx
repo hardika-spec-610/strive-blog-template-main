@@ -19,7 +19,7 @@ const BlogItem = (props) => {
             For mor info{" "}
             <a
               onClick={(e) => e.stopPropagation()}
-              href={`${process.env.REACT_APP_BE_URL}blogPosts/${_id}/pdf`}
+              href={`${process.env.REACT_APP_BE_URL}/blogPosts/${_id}/pdf`}
             >
               download PDF
             </a>
